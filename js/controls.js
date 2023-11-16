@@ -13,6 +13,10 @@ const keys = {
         pressed: false,
         hold: false
     },
+    f: {
+        pressed:false,
+        hold: false
+    }
 
 }
 
@@ -38,6 +42,10 @@ window.addEventListener("keydown", e => {
         case " ":
             keys.space.pressed = true
             break
+        case "f":
+            keys.f.pressed = true;
+            break
+    
     }
 })
 
@@ -63,51 +71,64 @@ window.addEventListener("keyup", e => {
             keys.space.pressed = false
             keys.space.hold = false
             break
+        case "f":
+            keys.f.pressed = false;
+            keys.f.hold = false;
+            break
+    
     }
 })
 
 function handleControls() {
-    player.setSprite("idle")
+    player.setSprite("idle");
 
-    if (!player.onGround) player.setSprite("jumping")
-    if (player.isAttacking) player.setSprite("attacking")
+    if (!player.onGround) player.setSprite("jumping");
+    if (player.isAttacking) player.setSprite("attacking");
+    if (player.isFire) player.setSprite("fireAttacking"); 
 
-    movement()
-    attacks()
+    movement();
+    attacks();
 
     function movement() {
-        player.velocity.x = 0
-        if (player.isAttacking) return
+        player.velocity.x = 0;
+        if (player.isAttacking) return;
+        if (player.isFire) return;
 
         if (keys.a.pressed && ["a", "ArrowLeft"].includes(player.lastKeyPressed)) {
-            player.velocity.x = -1.2 * 3.4
-            player.facing = "left"
+            player.velocity.x = -1.2 * 3.4;
+            player.facing = "left";
 
-            if (!player.onGround) return
+            if (!player.onGround) return;
 
-            player.setSprite("running")
+            player.setSprite("running");
         }
 
         if (keys.d.pressed && ["d", "ArrowRight"].includes(player.lastKeyPressed)) {
-            player.velocity.x = 1.2 * 3.4
-            player.facing = "right"
+            player.velocity.x = 1.2 * 3.4;
+            player.facing = "right";
 
-            if (!player.onGround) return
+            if (!player.onGround) return;
 
-            player.setSprite("running")
+            player.setSprite("running");
         }
 
         if (keys.w.pressed && !keys.w.hold) {
-            player.jump()
-            keys.w.hold = true
-            player.setSprite("jumping")
+            player.jump();
+            keys.w.hold = true;
+            player.setSprite("jumping");
         }
     }
 
     function attacks() {
         if (keys.space.pressed && !keys.space.hold) {
-            player.attack()
-            keys.space.hold = true
-        } 
+            player.attack();
+            keys.space.hold = true;
+        }
+
+        // Adicione a condição para o botão de ataque de fogo (tecla "f")
+        if (keys.f.pressed && !keys.f.hold) {
+            player.fireAttack(); // Chame o método fireAttack no jogador
+            keys.f.hold = true;
+        }
     }
 }

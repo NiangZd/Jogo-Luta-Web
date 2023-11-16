@@ -136,6 +136,9 @@ class Fighter extends Sprite {
         scale,
         maxHealth = 200,
         currentHealth = 200,
+        attackCooldown = 500,
+        fireAttackCooldown = 5000,
+
     }) {
         super({
             position,
@@ -146,20 +149,20 @@ class Fighter extends Sprite {
 
         this.velocity = velocity;
 
-        this.attackBox = attackBox || {
+        this.attackBox = {
             position: {
-                x: this.position.x,
-                y: this.position.y,
+                x: this.position.x + (this.width - 125) / 2, // Ajuste para o centro do tronco
+                y: this.position.y + this.height - 50, // Ajuste para a parte inferior do tronco
             },
             width: 125,
-            height: 50,
+            height: 150,
         };
         this.maxHealth = maxHealth;
         this.currentHealth = currentHealth;
         this.isAttacking;
-        this.attackCooldown = 500;
-        this.onAttackCooldown;
-
+        this.isFire;
+        this.attackCooldown = attackCooldown;
+        this.fireAttackCooldown = fireAttackCooldown;
         this.lastKeyPressed;
         this.onGround;
     }
@@ -255,6 +258,42 @@ class Fighter extends Sprite {
         }, this.attackCooldown);
     }
 
+    fireAttack() {
+        if (this.onFireAttackCooldown) return;
+
+        this.isFire = true;
+        this.onFireAttackCooldown = true;
+
+        // Check for collision with the enemy's position and dimensions
+        if (
+            this.position.x < enemy.position.x + enemy.width &&
+            this.position.x + this.attackBox.width > enemy.position.x &&
+            this.position.y < enemy.position.y + enemy.height &&
+            this.position.y + this.attackBox.height > enemy.position.y
+            
+        ) {
+            enemy.takeDamage(50);
+        }
+
+        if (
+            this.position.x < enemy2.position.x + enemy2.width &&
+            this.position.x + this.attackBox.width > enemy2.position.x &&
+            this.position.y < enemy2.position.y + enemy2.height &&
+            this.position.y + this.attackBox.height > enemy2.position.y
+            
+        ) {
+            enemy2.takeDamage(50);
+        }
+
+        setTimeout(() => {
+            this.isFire = false;
+        }, 400);
+
+        setTimeout(() => {
+            this.onFireAttackCooldown = false;
+        }, this.fireAttackCooldown);
+    }
+
     jump() {
         if (!this.onGround) return;
         this.velocity.y = -8.5;
@@ -268,8 +307,11 @@ class Enemy extends Fighter {
         attackBox,
         sprites,
         scale,
+        attackCooldown,
+        attackAnimationCooldown = attackCooldown,
         maxHealth = 80,
         currentHealth = 80,
+        nextPhase, // Adicione nextPhase como um parâmetro
     }) {
         super({
             position,
@@ -283,9 +325,11 @@ class Enemy extends Fighter {
         this.aiCooldown = 30;
         this.elapsedAiTime = 0;
         this.aiDirection = 1;
-        this.attackCooldown = 700;
+        this.attackCooldown = attackCooldown || 700;
+        this.attackAnimationCooldown;
         this.isAttacking = false;
         this.elapsedDeathTime = 500;
+        this.phaseAdvanced = false;
 
         this.sprites.dead = {
             src: "file:///C:/xampp/htdocs/assets/enemy1/Dead.png",
@@ -293,15 +337,15 @@ class Enemy extends Fighter {
             framesPerSpriteFrame: 8,
         };
 
-        this.attackBox = attackBox || {
+        this.attackBox = {
             position: {
-                x: this.position.x,
-                y: this.position.y + 20, // Mova a hitbox para baixo
+                x: this.position.x, // Ajuste para o centro do tronco
+                y: this.position.y, // Ajuste para a parte inferior do tronco
             },
             width: 125,
-            height: 50,
+            height: 150,
         };
-
+        this.nextPhase = nextPhase; // Armazene a função nextPhase
     }
 
     setHealth(newHealth) {
@@ -339,7 +383,7 @@ class Enemy extends Fighter {
                     // Ou mostrar uma mensagem no console
                     console.log("Você passou de fase!");
 
-                }, 2000);
+                }, 500);
             }
         } else {
             this.gravity();
@@ -360,6 +404,12 @@ class Enemy extends Fighter {
                 // A animação de morte está completa
                 // Lógica adicional pode ser adicionada aqui, se necessário
                 console.log("Animação de morte concluída!");
+
+                // Verifique se o inimigo está morto e avance para a próxima fase
+                if (this.isDead() && !this.phaseAdvanced) {
+                    this.phaseAdvanced = true;
+                    nextPhase();
+                }
             }
 
             this.elapsedDeathTime = 0;
@@ -367,7 +417,7 @@ class Enemy extends Fighter {
     }
     
     attack() {
-        if (this.onAttackCooldown) return;
+        if (this.onAttackCooldown || this.onAttackAnimationCooldown) return;
 
         this.isAttacking = true;
         this.onAttackCooldown = true;
@@ -385,13 +435,14 @@ class Enemy extends Fighter {
 
         setTimeout(() => {
             this.isAttacking = false;
-        }, 400);
+            this.onAttackCooldown = false;
+            this.onAttackAnimationCooldown = true;  // Ativa o cooldown da animação de ataque
+        }, this.attackCooldown);
 
         setTimeout(() => {
-            this.onAttackCooldown = false;
+            this.onAttackAnimationCooldown = false;  // Desativa o cooldown da animação de ataque após 1 segundo
         }, this.attackCooldown);
     }
-    
 
     takeDamage(amount) {
         this.currentHealth -= amount;
@@ -434,7 +485,7 @@ class Enemy extends Fighter {
             if (Math.abs(horizontalDifference) < this.attackBox.width) {
                 this.attack();
                 this.velocity.x = 0;
-                this.setSprite("attacking");
+                this.setSprite("attacking"); 
             } else {
                 this.velocity.x = 1.2 * 2 * (horizontalDifference > 0 ? 1 : -1);
 
@@ -464,29 +515,34 @@ const player = new Fighter({
     scale: 4,
     sprites: {
         idle: {
-            src: "https://i.imgur.com/pcsDhAR.png",
+            src: "https://i.imgur.com/z7vdDUQ.png",
             totalSpriteFrames: 7,
             framesPerSpriteFrame: 12,
         },
         running: {
-            src: "https://i.imgur.com/KYHE8uy.png",
+            src: "https://i.imgur.com/tSB5k8h.png",
             totalSpriteFrames: 8,
             framesPerSpriteFrame: 8,
         },
         jumping: {
-            src: "https://i.imgur.com/RsDBEr0.png",
+            src: "https://i.imgur.com/asslML4.png",
             totalSpriteFrames: 9,
             framesPerSpriteFrame: 12,
         },
-        attacking: {
-            src: "https://i.imgur.com/Q8lfZvL.png",
+        fireAttacking: {
+            src: "https://i.imgur.com/ctlwa5H.png",
             totalSpriteFrames: 14,
+            framesPerSpriteFrame: 10,
+        },
+        attacking: {
+            src: "https://i.imgur.com/U6PZsgh.png",
+            totalSpriteFrames: 4,
             framesPerSpriteFrame: 8,
         },
     },
 });
 
-const enemy = new Enemy({
+let enemy = new Enemy({
     position: {
         x: 500,
         y: 0,
@@ -498,38 +554,40 @@ const enemy = new Enemy({
     scale: 4,
     sprites: {
         idle: {
-            src: "https://i.imgur.com/tv3GkfQ.png",
+            src: "https://i.imgur.com/dRbQjkS.png",
             totalSpriteFrames: 6,
             framesPerSpriteFrame: 8,
         },
         running: {
-            src: "https://i.imgur.com/0X5JUYi.png",
+            src: "https://i.imgur.com/lVhZWP3.png",
             totalSpriteFrames: 8,
             framesPerSpriteFrame: 8,
         },
         jumping: {
-            src: "https://i.imgur.com/DcA2ch0.png",
+            src: "https://i.imgur.com/6Rrg3WG.png",
             totalSpriteFrames: 10,
             framesPerSpriteFrame: 8,
         },
         attacking: {
-            src: "https://i.imgur.com/GE5FA8U.png",
+            src: "https://i.imgur.com/eCKDndO.png",
             totalSpriteFrames: 4,
             framesPerSpriteFrame: 8,
         },
         dead: {
-            src: "https://i.imgur.com/gy2D1VJ.png",
+            src: "https://i.imgur.com/bPsx2Wi.png",
             totalSpriteFrames: 3, 
             framesPerSpriteFrame: 3,
         },
-    
     },
+    attackCooldown: 1200,
+    attackAnimationCooldown: 2000,
+    nextPhase: nextPhase,
 });
 
 enemy.setAttackDamage(8);
 enemy.setHealth(80);
 
-const enemy2 = new Enemy({
+let enemy2 = new Enemy({
     position: {
         x: 500,
         y: 0,
@@ -541,36 +599,83 @@ const enemy2 = new Enemy({
     scale: 4,
     sprites: {
         idle: {
-            src: "https://i.imgur.com/RA6SC7C.png",
-            totalSpriteFrames: 6,
+            src: "https://i.imgur.com/ERntUbV.png",
+            totalSpriteFrames: 7,
             framesPerSpriteFrame: 8,
         },
         running: {
-            src: "https://i.imgur.com/GUNUHb8.png",
+            src: "https://i.imgur.com/SPP2VID.png",
             totalSpriteFrames: 8,
             framesPerSpriteFrame: 8,
         },
         jumping: {
-            src: "https://i.imgur.com/lvSoCEL.png",
-            totalSpriteFrames: 12,
+            src: "https://i.imgur.com/QEzta57.png",
+            totalSpriteFrames: 8,
             framesPerSpriteFrame: 8,
         },
         attacking: {
-            src: "https://i.imgur.com/JINJz9W.png",
-            totalSpriteFrames: 5,
+            src: "https://i.imgur.com/O907q7R.png",
+            totalSpriteFrames: 10,
+            framesPerSpriteFrame: 10,
+        },
+        dead: {
+            src: "https://i.imgur.com/p16WUZw.png",
+            totalSpriteFrames: 5, 
+            framesPerSpriteFrame: 8,
+        },
+    },
+    attackCooldown: 1200,
+    attackAnimationCooldown: 2000,
+    nextPhase: nextPhase,
+});
+
+enemy2.setAttackDamage(8);
+enemy2.setHealth(220);
+
+let enemy3 = new Enemy({
+    position: {
+        x: 500,
+        y: 0,
+    },
+    velocity: {
+        x: 0,
+        y: 10,
+    },
+    scale: 4,
+    sprites: {
+        idle: {
+            src: "https://i.imgur.com/koJyixx.png",
+            totalSpriteFrames: 8,
+            framesPerSpriteFrame: 8,
+        },
+        running: {
+            src: "https://i.imgur.com/otrLCpH.png",
+            totalSpriteFrames: 8,
+            framesPerSpriteFrame: 8,
+        },
+        jumping: {
+            src: "https://i.imgur.com/tdNBiUo.png",
+            totalSpriteFrames: 8,
+            framesPerSpriteFrame: 8,
+        },
+        attacking: {
+            src: "https://i.imgur.com/bLjLxZ0.png",
+            totalSpriteFrames: 7,
             framesPerSpriteFrame: 8,
         },
         dead: {
-            src: "https://i.imgur.com/l1vLIVE.png",
+            src: "https://i.imgur.com/hLU8UKs.png",
             totalSpriteFrames: 4, 
             framesPerSpriteFrame: 8,
         },
-    
     },
+    attackCooldown: 1200,
+    attackAnimationCooldown: 2000,
+    nextPhase: nextPhase,
 });
 
-enemy2.setAttackDamage(6);
-enemy2.setHealth(220);
+enemy3.setAttackDamage(8);
+enemy3.setHealth(400);
 
 const background = new Sprite({
     position: {
@@ -579,3 +684,85 @@ const background = new Sprite({
     },
     source: backgroundSpritePath,
 });
+
+function nextPhase() {
+    currentPhase += 1;
+    resetEnemies();
+}
+
+
+// APENAS VERIFICAÇÃO DE HITBOX
+
+
+/*function drawHitbox(ctx, hitbox) {
+    ctx.beginPath();
+    ctx.rect(hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
+    ctx.strokeStyle = 'red';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+// Modificação na função draw do Sprite para desenhar hitboxes
+Sprite.prototype.draw = function (ctx) {
+    ctx.imageSmoothingEnabled = false;
+
+    // Determine the x-scale based on the facing direction
+    const xScale = this.facing === 'left' ? -1 : 1;
+
+    this.drawHealthBar(ctx);
+
+    ctx.save();
+    ctx.translate(this.position.x + this.offset.x, this.position.y + this.offset.y);
+    ctx.scale(xScale, 1); // Flip the image horizontally if facing left
+
+    ctx.drawImage(
+        this.image,
+        (this.currentSpriteFrame * this.image.width) / this.totalSpriteFrames,
+        0,
+        this.image.width / this.totalSpriteFrames,
+        this.image.height,
+        0,
+        0,
+        (this.width / this.totalSpriteFrames) * xScale, // Adjust the width with x-scale
+        this.height
+    );
+
+    // Desenhe a hitbox do sprite (adicionei esta linha)
+    drawHitbox(ctx, this);
+
+    ctx.restore();
+};
+
+// Modificação na função update do Fighter para desenhar a hitbox da attackBox
+Fighter.prototype.update = function (ctx) {
+    this.gravity();
+    this.loadSprite();
+
+    // Desenhe a hitbox do jogador (adicionei esta linha)
+    drawHitbox(ctx, this.attackBox);
+
+    this.draw(ctx);
+    this.animate();
+};
+
+// Modificação na função update do Enemy para desenhar a hitbox da attackBox
+Enemy.prototype.update = function (ctx) {
+    if (this.isDead()) {
+        this.setSprite('dead');
+        this.animateDeath();
+
+        // Lógica adicional pode ser adicionada aqui
+
+    } else {
+        this.gravity();
+        this.loadSprite();
+        this.handleAI();
+
+        // Desenhe a hitbox do inimigo (adicionei esta linha)
+        drawHitbox(ctx, this.attackBox);
+
+        this.draw(ctx);
+        this.animate();
+    }
+};*/
