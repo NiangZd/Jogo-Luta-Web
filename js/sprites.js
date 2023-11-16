@@ -1,6 +1,6 @@
 const gravity = 0.2;
 
-const floorHeight = 96;
+const floorHeight = 50;
 
 const backgroundSpritePath = "./assets/background/placeholder.png";
 
