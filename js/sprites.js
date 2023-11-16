@@ -2,7 +2,7 @@ const gravity = 0.2;
 
 const floorHeight = 50;
 
-const backgroundSpritePath = "./assets/background/placeholder.png";
+const backgroundSpritePath = "./assets/background/bg.png";
 
 const defaultObjectSpritePath = "file:///C:/xampp/htdocs/assets/objects/square.svg";
 
