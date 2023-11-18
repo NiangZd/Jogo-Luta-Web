@@ -100,6 +100,39 @@
         <!-- Canvas -->
         <canvas></canvas>
     </div>
+
+    <button id="playButton" hidden>Reproduzir</button>
+
+        <audio id="backgroundAudio" loop>
+            <source src="assets/sounds/bgMusic.mp3" type="audio/mp3">
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var audio = document.getElementById('backgroundAudio');
+                var playButton = document.getElementById('playButton');
+
+                // Função para reproduzir áudio
+                function playAudio() {
+                    audio.play().then(function () {
+                        console.log('Áudio reproduzido com sucesso após interação do usuário.');
+                    }).catch(function (error) {
+                        console.error('Erro ao reproduzir áudio:', error.message);
+                    });
+                }
+
+                // Adicionar evento de clique ao botão
+                playButton.addEventListener('click', playAudio);
+
+                // Reproduzir áudio automaticamente ao carregar a página se o usuário interagiu
+                document.addEventListener('click', function () {
+                    playAudio();
+                    // Remover o evento de clique após a primeira interação
+                    document.removeEventListener('click', arguments.callee);
+                });
+            });
+        </script>
 </body>
 
 </html>

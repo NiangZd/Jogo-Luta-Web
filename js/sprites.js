@@ -3,6 +3,8 @@ const floorHeight = 50;
 const backgroundSpritePath = "./assets/background/bg.png";
 const defaultObjectSpritePath = "file:///C:/xampp/htdocs/assets/objects/square.svg";
 
+const fireSound = new Audio('');
+
 class Sprite {
     constructor({ position, velocity, source, scale, offset, sprites }) {
         this.position = position;
@@ -252,8 +254,12 @@ class Fighter extends Sprite {
         }, this.attackCooldown);
     }
 
+    
+
     fireAttack() {
         if (this.onFireAttackCooldown) return;
+
+        fireSound.play();
 
         this.isFire = true;
         this.onFireAttackCooldown = true;
@@ -379,7 +385,7 @@ class Enemy extends Fighter {
                     // Ou mostrar uma mensagem no console
                     console.log("Você passou de fase!");
 
-                }, 500);
+                }, 700);
             }
         } else {
             this.gravity();
@@ -399,6 +405,7 @@ class Enemy extends Fighter {
             if (this.currentSpriteFrame >= this.sprites.dead.totalSpriteFrames) {
                 // A animação de morte está completa
                 // Lógica adicional pode ser adicionada aqui, se necessário
+                console.log(this.phaseAdvanced);
                 console.log("Animação de morte concluída!");
 
                 // Verifique se o inimigo está morto e avance para a próxima fase
@@ -407,8 +414,6 @@ class Enemy extends Fighter {
 
                     // Chame a função ganhador aqui
                     ganhador({ player, enemy, timerID });
-
-                    // Ou, se preferir, você pode colocar a lógica da função ganhador aqui diretamente
 
                     // Reinicie o jogo ou faça qualquer outra ação necessária após a morte do inimigo
                     nextPhase();
