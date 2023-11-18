@@ -17,86 +17,93 @@ const keys = {
         pressed:false,
         hold: false
     }
+};
 
-}
+// Define os limites do cenário
+const sceneLimits = {
+    minX: 0,
+    maxX: window.innerWidth // Substitua 800 pelo valor máximo do eixo x do seu cenário
+};
 
 window.addEventListener("keydown", e => {
-    let key = e.key
+    let key = e.key;
 
     switch(key) {
         case "ArrowLeft":
         case "a":
-            keys.a.pressed = true
-            player.lastKeyPressed = key
-            break
+            keys.a.pressed = true;
+            player.lastKeyPressed = key;
+            break;
         case "ArrowRight":
         case "d":
-            keys.d.pressed = true
-            player.lastKeyPressed = key
-            break
+            keys.d.pressed = true;
+            player.lastKeyPressed = key;
+            break;
         case "ArrowUp":
         case "w":
-            keys.w.pressed = true
-            break
+            keys.w.pressed = true;
+            break;
         case "z":
         case " ":
-            keys.space.pressed = true
-            break
+            keys.space.pressed = true;
+            break;
         case "f":
             keys.f.pressed = true;
-            break
-    
+            break;
     }
-})
+});
 
 window.addEventListener("keyup", e => {
-    let key = e.key
+    let key = e.key;
 
     switch(key) {
         case "ArrowLeft":
         case "a":
-            keys.a.pressed = false
-            break
+            keys.a.pressed = false;
+            break;
         case "ArrowRight":
         case "d":
-            keys.d.pressed = false
-            break
+            keys.d.pressed = false;
+            break;
         case "ArrowUp":
         case "w":
-            keys.w.pressed = false
-            keys.w.hold = false
-            break
+            keys.w.pressed = false;
+            keys.w.hold = false;
+            break;
         case "z":
         case " ":
-            keys.space.pressed = false
-            keys.space.hold = false
-            break
+            keys.space.pressed = false;
+            keys.space.hold = false;
+            break;
         case "f":
             keys.f.pressed = false;
             keys.f.hold = false;
-            break
-    
+            break;
     }
-})
+});
 
 function handleControls() {
     player.setSprite("idle");
 
     if (!player.onGround) player.setSprite("jumping");
     if (player.isAttacking) player.setSprite("attacking");
-    if (player.isFire) player.setSprite("fireAttacking"); 
+    if (player.isFire) player.setSprite("fireAttacking");
 
     movement();
     attacks();
 
     function movement() {
         player.velocity.x = 0;
-        if (player.isAttacking) return;
-        if (player.isFire) return;
+        if (player.isAttacking || player.isFire) return;
 
         if (keys.a.pressed && ["a", "ArrowLeft"].includes(player.lastKeyPressed)) {
             player.velocity.x = -1.2 * 3.4;
             player.facing = "left";
+
+            if (player.x + player.velocity.x < sceneLimits.minX) {
+                // Evita que o jogador saia para além da borda esquerda
+                player.velocity.x = sceneLimits.minX - player.x;
+            }
 
             if (!player.onGround) return;
 
@@ -106,6 +113,11 @@ function handleControls() {
         if (keys.d.pressed && ["d", "ArrowRight"].includes(player.lastKeyPressed)) {
             player.velocity.x = 1.2 * 3.4;
             player.facing = "right";
+
+            if (player.x + player.velocity.x > sceneLimits.maxX) {
+                // Evita que o jogador saia para além da borda direita
+                player.velocity.x = sceneLimits.maxX - player.x;
+            }
 
             if (!player.onGround) return;
 
@@ -125,9 +137,8 @@ function handleControls() {
             keys.space.hold = true;
         }
 
-        // Adicione a condição para o botão de ataque de fogo (tecla "f")
         if (keys.f.pressed && !keys.f.hold) {
-            player.fireAttack(); // Chame o método fireAttack no jogador
+            player.fireAttack();
             keys.f.hold = true;
         }
     }
