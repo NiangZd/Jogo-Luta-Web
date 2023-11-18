@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +11,95 @@
     <script src="./js/sprites.js"></script>
     <script src="./js/controls.js"></script>
 </head>
+
 <body>
-    <canvas></canvas>
+    <div style="position: relative; display: inline-block;">
+
+        <!-- Player and Enemy Health Bars and Timer Container -->
+        <div style="
+            position: absolute;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            padding: 20px;
+        ">
+
+            <!-- Player Health Bar -->
+            <div style="
+                position: relative;
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+                border-top: 4px solid white;
+                border-left: 4px solid white;
+                border-bottom: 4px solid white;
+            ">
+                <div style="background-color: red; height: 30px; width: 100%;"></div>
+                <div id="playerVida" style="
+                    position: absolute;
+                    background: #818CF8;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    width: 100%;
+                "></div>
+                <div></div>
+            </div>
+
+            <!-- Timer -->
+            <div id="timer" style="
+                background-color: black;
+                width: 100px;
+                height: 50px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                border: 4px solid white;
+            ">60</div>
+
+            <!-- Enemy Health Bar -->
+            <div style="
+                position: relative;
+                width: 100%;
+                border-top: 4px solid white;
+                border-bottom: 4px solid white;
+                border-right: 4px solid white;
+            ">
+                <div style="
+                    background-color: red;
+                    height: 30px;
+                "></div>
+                <div id="enemyVida" style="
+                    position: absolute;
+                    background: #818CF8;
+                    top: 0;
+                    right: 0;
+                    bottom: 0;
+                    left: 0;
+                "></div>
+                <div></div>
+            </div>
+        </div>
+
+        <!-- Display Text Container -->
+        <div id="displayText" style="
+            position: absolute;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            display: none;
+        ">tie</div>
+
+        <!-- Canvas -->
+        <canvas></canvas>
+    </div>
 </body>
+
 </html>

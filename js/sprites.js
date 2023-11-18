@@ -1,9 +1,6 @@
 const gravity = 0.2;
-
 const floorHeight = 50;
-
 const backgroundSpritePath = "./assets/background/bg.png";
-
 const defaultObjectSpritePath = "file:///C:/xampp/htdocs/assets/objects/square.svg";
 
 class Sprite {
@@ -45,6 +42,7 @@ class Sprite {
             this.currentSprite = this.sprites.idle;
         }
     }
+    
 
     loadSprite() {
         let previousSprite = this.image.src;
@@ -75,6 +73,7 @@ class Sprite {
             this.position.y += (previousSpriteImage.height - this.image.height) * this.scale;
         }
     }
+
 
     draw(ctx) {
         ctx.imageSmoothingEnabled = false;
@@ -174,23 +173,18 @@ class Fighter extends Sprite {
         }
     }
 
+
     drawHealthBar(ctx) {
         // Largura fixa da barra de vida
         const healthBarWidth = 50;
-    
+
         // Calcula a largura proporcional com base na vida atual
         const currentHealthWidth = (this.currentHealth / this.maxHealth) * healthBarWidth;
-    
-        // Desenha a barra de vida
-        ctx.fillStyle = "green";
-        ctx.fillRect(
-            this.position.x,
-            this.position.y - 10,
-            currentHealthWidth,
-            10
-        );
+
+        // Atualiza a barra de vida no HTML
+        document.querySelector('#playerVida').style.width = (this.currentHealth / this.maxHealth) * 100 + '%';
+
     }
-    
 
     gravity() {
         if (this.position.y + this.height >= canvas.height - floorHeight) {
@@ -232,7 +226,7 @@ class Fighter extends Sprite {
             this.position.x + this.attackBox.width > enemy.position.x &&
             this.position.y < enemy.position.y + enemy.height &&
             this.position.y + this.attackBox.height > enemy.position.y
-            
+
         ) {
             // Deal damage only if there is a collision
             enemy.takeDamage(12);
@@ -243,7 +237,7 @@ class Fighter extends Sprite {
             this.position.x + this.attackBox.width > enemy2.position.x &&
             this.position.y < enemy2.position.y + enemy2.height &&
             this.position.y + this.attackBox.height > enemy2.position.y
-            
+
         ) {
             // Deal damage only if there is a collision
             enemy2.takeDamage(12);
@@ -270,7 +264,7 @@ class Fighter extends Sprite {
             this.position.x + this.attackBox.width > enemy.position.x &&
             this.position.y < enemy.position.y + enemy.height &&
             this.position.y + this.attackBox.height > enemy.position.y
-            
+
         ) {
             enemy.takeDamage(50);
         }
@@ -280,7 +274,7 @@ class Fighter extends Sprite {
             this.position.x + this.attackBox.width > enemy2.position.x &&
             this.position.y < enemy2.position.y + enemy2.height &&
             this.position.y + this.attackBox.height > enemy2.position.y
-            
+
         ) {
             enemy2.takeDamage(50);
         }
@@ -299,6 +293,8 @@ class Fighter extends Sprite {
         this.velocity.y = -8.5;
     }
 }
+
+
 
 class Enemy extends Fighter {
     constructor({
@@ -361,7 +357,7 @@ class Enemy extends Fighter {
             return true;
         }
         return false;
-    }    
+    }
 
     update(ctx) {
         if (this.isDead()) {
@@ -392,8 +388,8 @@ class Enemy extends Fighter {
             this.draw(ctx);
             this.animate();
         }
-    }    
-    
+    }
+
     animateDeath() {
         this.elapsedDeathTime += 1;
 
@@ -408,6 +404,13 @@ class Enemy extends Fighter {
                 // Verifique se o inimigo está morto e avance para a próxima fase
                 if (this.isDead() && !this.phaseAdvanced) {
                     this.phaseAdvanced = true;
+
+                    // Chame a função ganhador aqui
+                    ganhador({ player, enemy, timerID });
+
+                    // Ou, se preferir, você pode colocar a lógica da função ganhador aqui diretamente
+
+                    // Reinicie o jogo ou faça qualquer outra ação necessária após a morte do inimigo
                     nextPhase();
                 }
             }
@@ -415,7 +418,8 @@ class Enemy extends Fighter {
             this.elapsedDeathTime = 0;
         }
     }
-    
+
+
     attack() {
         if (this.onAttackCooldown || this.onAttackAnimationCooldown) return;
 
@@ -449,26 +453,33 @@ class Enemy extends Fighter {
         if (this.currentHealth < 0) {
             this.currentHealth = 0;
         }
+
+        console.log('Enemy took damage. Current health:', this.currentHealth);
+
+        document.querySelector('#enemyVida').style.width = (this.currentHealth / this.maxHealth) * 100 + '%';
+
+        // Atualiza imediatamente a barra de vida no HTML após o dano
+        this.drawHealthBar();
     }
-    
+
+
+
     drawHealthBar(ctx) {
         if (!this.isDead()) {
             // Largura fixa da barra de vida
             const healthBarWidth = 50;
-    
+
             // Calcula a largura proporcional com base na vida atual
             const currentHealthWidth = (this.currentHealth / this.maxHealth) * healthBarWidth;
-    
-            // Desenha a barra de vida
-            ctx.fillStyle = "red";
-            ctx.fillRect(
-                this.position.x,
-                this.position.y - 10,
-                currentHealthWidth,
-                10
-            );
+
+            // Atualiza a barra de vida no HTML
+            const newWidth = Math.min(currentHealthWidth, healthBarWidth); // Garante que não ultrapasse o limite
+            document.querySelector('#enemyVida').style.width = (newWidth / healthBarWidth) * 100 + '%';
         }
-    }    
+    }
+
+
+
 
     handleAI() {
         this.elapsedAiTime += 1;
@@ -485,7 +496,7 @@ class Enemy extends Fighter {
             if (Math.abs(horizontalDifference) < this.attackBox.width) {
                 this.attack();
                 this.velocity.x = 0;
-                this.setSprite("attacking"); 
+                this.setSprite("attacking");
             } else {
                 this.velocity.x = 1.2 * 2 * (horizontalDifference > 0 ? 1 : -1);
 
@@ -575,7 +586,7 @@ let enemy = new Enemy({
         },
         dead: {
             src: "https://i.imgur.com/bPsx2Wi.png",
-            totalSpriteFrames: 3, 
+            totalSpriteFrames: 3,
             framesPerSpriteFrame: 3,
         },
     },
@@ -620,7 +631,7 @@ let enemy2 = new Enemy({
         },
         dead: {
             src: "https://i.imgur.com/p16WUZw.png",
-            totalSpriteFrames: 5, 
+            totalSpriteFrames: 5,
             framesPerSpriteFrame: 8,
         },
     },
@@ -665,7 +676,7 @@ let enemy3 = new Enemy({
         },
         dead: {
             src: "https://i.imgur.com/hLU8UKs.png",
-            totalSpriteFrames: 4, 
+            totalSpriteFrames: 4,
             framesPerSpriteFrame: 8,
         },
     },
@@ -685,10 +696,92 @@ const background = new Sprite({
     source: backgroundSpritePath,
 });
 
+function resetEnemies() {
+    // Reinicialize as posições e estados dos inimigos
+    enemy.position = { x: 500, y: 0 };
+    enemy.velocity = { x: 0, y: 10 };
+    enemy.setHealth(80);
+    enemy.setAttackDamage(8);
+    enemy.isAttacking = false;
+    enemy.onAttackCooldown = false;
+    enemy.onAttackAnimationCooldown = false;
+    enemy.elapsedAiTime = 0;
+    enemy.elapsedDeathTime = 500;
+    enemy.phaseAdvanced = false;
+    enemy.setSprite("idle");
+
+    // Faça o mesmo para o enemy2 e enemy3, se necessário
+    enemy2.position = { x: 500, y: 0 };
+    enemy2.velocity = { x: 0, y: 10 };
+    enemy2.setHealth(220);
+    enemy2.setAttackDamage(8);
+    enemy2.isAttacking = false;
+    enemy2.onAttackCooldown = false;
+    enemy2.onAttackAnimationCooldown = false;
+    enemy2.elapsedAiTime = 0;
+    enemy2.elapsedDeathTime = 500;
+    enemy2.phaseAdvanced = false;
+    enemy2.setSprite("idle");
+
+    enemy3.position = { x: 500, y: 0 };
+    enemy3.velocity = { x: 0, y: 10 };
+    enemy3.setHealth(400);
+    enemy3.setAttackDamage(8);
+    enemy3.isAttacking = false;
+    enemy3.onAttackCooldown = false;
+    enemy3.onAttackAnimationCooldown = false;
+    enemy3.elapsedAiTime = 0;
+    enemy3.elapsedDeathTime = 500;
+    enemy3.phaseAdvanced = false;
+    enemy3.setSprite("idle");
+
+    // Atualiza a barra de saúde do inimigo no HTML
+    document.querySelector('#enemyVida').style.width = '100%';
+}
+
 function nextPhase() {
     currentPhase += 1;
     resetEnemies();
+
+    // Reinicia o temporizador ao avançar para a próxima fase
+    timer;
+    startTimer();
+
+    // Atualiza a barra de saúde do inimigo no HTML
+    document.querySelector('#enemyVida').style.width = '100%';
 }
+
+
+function ganhador({ player, enemy, timerID }) {
+    clearTimeout(timerID);
+    document.querySelector('#displayText').style.display = 'flex';
+
+    if (player.currentHealth === enemy.currentHealth) {
+        document.querySelector('#displayText').innerHTML = 'Empate';
+    } else if (player.currentHealth > enemy.currentHealth) {
+        document.querySelector('#displayText').innerHTML = 'Player 1 ganhou';
+    } else if (player.currentHealth < enemy.currentHealth) {
+        document.querySelector('#displayText').innerHTML = 'BOT ganhou';
+    }
+}
+
+
+let timer = 30;
+let timerID
+
+function startTimer() {
+    if (timer > 0) {
+        timerID = setTimeout(startTimer, 1000);
+        timer--;
+        document.querySelector('#timer').innerHTML = timer;
+    }
+
+    if (timer === 0) {
+        ganhador({ player, enemy, timerID })
+    }
+}
+
+startTimer();
 
 
 // APENAS VERIFICAÇÃO DE HITBOX
@@ -766,3 +859,5 @@ Enemy.prototype.update = function (ctx) {
         this.animate();
     }
 };*/
+
+
