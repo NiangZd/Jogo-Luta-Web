@@ -3,7 +3,10 @@ const floorHeight = 50;
 const backgroundSpritePath = "./assets/background/bg.png";
 const defaultObjectSpritePath = "file:///C:/xampp/htdocs/assets/objects/square.svg";
 
-const fireSound = new Audio('');
+const fireSound = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta-Web/main/assets/sounds/soundAtk/bolaDeFogo.mp3');
+
+const swordSound = new Audio('');
+
 
 class Sprite {
     constructor({ position, velocity, source, scale, offset, sprites }) {
@@ -384,8 +387,8 @@ class Enemy extends Fighter {
 
                     // Ou mostrar uma mensagem no console
                     console.log("Você passou de fase!");
-
                 }, 700);
+                nextPhase();
             }
         } else {
             this.gravity();
@@ -416,7 +419,6 @@ class Enemy extends Fighter {
                     ganhador({ player, enemy, timerID });
 
                     // Reinicie o jogo ou faça qualquer outra ação necessária após a morte do inimigo
-                    nextPhase();
                 }
             }
 
@@ -745,7 +747,7 @@ function resetEnemies() {
 }
 
 function nextPhase() {
-    currentPhase += 1;
+    currentPhase ++;
     resetEnemies();
 
     // Reinicia o temporizador ao avançar para a próxima fase
