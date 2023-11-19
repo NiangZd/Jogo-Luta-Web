@@ -7,8 +7,6 @@ const fireSound = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta
 
 const swordSound = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta-Web/main/assets/sounds/soundAtk/ataqueEspada.mp3');
 
-const soundBotAtk = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta-Web/main/assets/sounds/soundAtk/');
-
 
 class Sprite {
     constructor({ position, velocity, source, scale, offset, sprites }) {
@@ -434,7 +432,6 @@ class Enemy extends Fighter {
 
     attack() {
         if (this.onAttackCooldown || this.onAttackAnimationCooldown) return;
-
         this.isAttacking = true;
         this.onAttackCooldown = true;
 
