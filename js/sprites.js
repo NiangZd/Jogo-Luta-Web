@@ -5,7 +5,9 @@ const defaultObjectSpritePath = "file:///C:/xampp/htdocs/assets/objects/square.s
 
 const fireSound = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta-Web/main/assets/sounds/soundAtk/bolaDeFogo.mp3');
 
-const swordSound = new Audio('');
+const swordSound = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta-Web/main/assets/sounds/soundAtk/ataqueEspada.mp3');
+
+const soundBotAtk = new Audio('https://raw.githubusercontent.com/NiangZd/Jogo-Luta-Web/main/assets/sounds/soundAtk/');
 
 
 class Sprite {
@@ -220,6 +222,9 @@ class Fighter extends Sprite {
     }
 
     attack() {
+
+        swordSound.play();
+
         if (this.onAttackCooldown) return;
 
         this.isAttacking = true;
