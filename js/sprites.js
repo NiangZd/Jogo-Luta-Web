@@ -142,6 +142,7 @@ class Fighter extends Sprite {
         currentHealth = 200,
         attackCooldown = 500,
         fireAttackCooldown = 5000,
+        pontos = 0,
 
     }) {
         super({
@@ -152,7 +153,7 @@ class Fighter extends Sprite {
         });
 
         this.velocity = velocity;
-
+        this.pontos = pontos;
         this.attackBox = {
             position: {
                 x: this.position.x + (this.width - 125) / 2, // Ajuste para o centro do tronco
@@ -463,12 +464,20 @@ class Enemy extends Fighter {
             this.currentHealth = 0;
         }
 
+        if (amount === 12) {
+            player.pontos += 20;
+        } else if (amount === 50) {
+            player.pontos += 70;
+        }
+
         console.log('Enemy took damage. Current health:', this.currentHealth);
 
         document.querySelector('#enemyVida').style.width = (this.currentHealth / this.maxHealth) * 100 + '%';
 
         // Atualiza imediatamente a barra de vida no HTML após o dano
         this.drawHealthBar();
+
+        atualizarPontos();
     }
 
 
@@ -791,6 +800,15 @@ function startTimer() {
 }
 
 startTimer();
+
+function atualizarPontos() {
+
+    const pontosElement = document.getElementById('pontos-atual');
+    pontosElement.textContent = player.pontos; // Atualiza o conteúdo com os pontos do jogador
+}
+
+
+
 
 
 // APENAS VERIFICAÇÃO DE HITBOX
