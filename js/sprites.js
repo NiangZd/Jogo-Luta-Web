@@ -757,7 +757,7 @@ function nextPhase() {
     startTimer();
 
     // Atualiza a barra de saúde do inimigo no HTML
-    document.querySelector('#enemyVida').style.width = '100%';
+    document.querySelector('#enemyVida').style.width = '70%';
 }
 
 
@@ -776,7 +776,7 @@ function ganhador({ player, enemy, timerID }) {
 
 
 let timer = 30;
-let timerID
+let timerID;
 
 function startTimer() {
     if (timer > 0) {
