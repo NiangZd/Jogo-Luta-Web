@@ -1,11 +1,11 @@
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
-const canvasWidth = 1024
-const canvasHeight = 576
+const canvasWidth = 1024;
+const canvasHeight = 576;
 
-canvas.width = canvasWidth
-canvas.height = canvasHeight
+canvas.width = canvasWidth;
+canvas.height = canvasHeight;
 
 const desiredFPS = 120;
 const frameTime = 1000 / desiredFPS;
@@ -22,37 +22,75 @@ function initLocalStorage() {
     }
 }
 
-// Função para atualizar a pontuação na interface do usuário e salvá-la no localStorage
-function atualizarPontuacao(pontuacao) {
+function salvarPontuacaoLocal(jogador, pontuacao) {
+    const dadosPontuacao = obterPontuacoesSalvas();
+
+    const indiceJogador = dadosPontuacao.findIndex((item) => item.jogador === jogador);
+
+    if (indiceJogador === -1) {
+        dadosPontuacao.push({ jogador, pontuacao });
+    } else {
+        dadosPontuacao[indiceJogador].pontuacao = pontuacao;
+    }
+
+    localStorage.setItem('dadosPontuacao', JSON.stringify(dadosPontuacao));
+}
+
+function obterPontuacoesSalvas() {
+    const dadosPontuacao = localStorage.getItem('dadosPontuacao');
+    return dadosPontuacao ? JSON.parse(dadosPontuacao) : [];
+}
+
+function obterJogadoresDoLocalStorage() {
+    const jogadoresLocalStorage = localStorage.getItem('jogadores');
+    return jogadoresLocalStorage ? JSON.parse(jogadoresLocalStorage) : [];
+}
+
+function renderizaJogadores() {
+    console.log("Renderizando jogadores.");
+
+    const listaPlayers = document.querySelector("#app ul");
+    if (listaPlayers) {
+        listaPlayers.innerHTML = "";
+        const players = obterJogadoresDoLocalStorage();
+
+        console.log("Jogadores obtidos do localStorage:", players);
+
+        players.forEach(function (player) {
+            let li = document.createElement("li");
+            li.textContent = "Jogador: " + player;
+            listaPlayers.appendChild(li);
+        });
+    } else {
+        console.error("Elemento listaPlayers não encontrado.");
+    }
+}
+
+function atualizarPontuacao(pontuacao, jogadorAtual) {
     const pontosElement = document.getElementById('pontos-atual');
-    pontosElement.textContent = pontuacao; // Atualiza o conteúdo com os pontos do jogador
+    pontosElement.textContent = pontuacao;
 
-    // Obtém o jogador atual (você pode substituir isso pelo jogador real)
-    const jogadorAtual = "jogador_teste"; // Substitua pelo jogador real
-
-    // Salva a pontuação associada ao jogador no localStorage
     salvarPontuacaoLocal(jogadorAtual, pontuacao);
 }
 
-// ... (seu código anterior)
+initLocalStorage();
 
-initLocalStorage(); // Chame esta função antes do loop principal do jogo
-
-
+startTimer();
 
 function resetEnemies() {
-    // Reinicie as propriedades de cada inimigo para a próxima fase
+    timer=30;
     enemy.setHealth(80);
     enemy2.setHealth(220);
     enemy3.setHealth(400);
 
-    // Altere o inimigo para enemy2 ou enemy3 conforme a fase
     if (currentPhase === 2) {
         enemy = enemy2;
     } else if (currentPhase === 3) {
         enemy = enemy3;
     }
 }
+
+let pontuacaoAtual = 0; // Inicialize pontuacaoAtual no escopo global
 
 function animate() {
     const currentTime = performance.now();
@@ -71,35 +109,25 @@ function animate() {
         lag -= frameTime;
     }
 
-    // Verifique se o jogador ganhou (derrotou todos os inimigos)
     if (currentPhase > 3) {
-        // Adicione lógica aqui para lidar com a vitória do jogador
         alert("Parabéns! Você venceu o jogo!");
-        // Ou reinicie o jogo se necessário
-        // location.reload();
     } else if (player.isDead()) {
+        alert("Game Over! Você perdeu!");
 
-        alert("Game Over! Você perdeu!!")
-        // Adicione aqui a lógica para quando o jogador morrer
-        console.log("O jogador morreu!");
+        const urlParams = new URLSearchParams(window.location.search);
+        const nomeDoJogador = urlParams.get('nickname') || "Jogador Anônimo";
 
-        // Dentro da condição de derrota do jogador
-        const pontuacaoAtual = atualizarPontuacao();
-        console.log(`Pontuação atual do jogador: ${pontuacaoAtual}`);
+        pontuacaoAtual = parseInt(localStorage.getItem('pontuacao')) || 0;
 
-        // Ou use a função de atualização de pontuação
-        atualizarPontuacao(pontuacaoAtual);
+        console.log(`Pontuação atual do jogador ${nomeDoJogador}: ${pontuacaoAtual}`);
 
-        // Pode exibir uma mensagem na tela, reiniciar o jogo, etc.
-        alert("Game Over! O jogador morreu!")
-
+        atualizarPontuacao(pontuacaoAtual, nomeDoJogador);
+        salvarPontuacaoLocal(nomeDoJogador, pontuacaoAtual);
     } else {
-        // Caso contrário, continue para a próxima fase apenas se a animação de morte estiver concluída
         if (!enemy.isDead() || (enemy.isDead() && enemy.phaseAdvanced)) {
             window.requestAnimationFrame(animate);
         }
     }
-
 }
 
 animate();

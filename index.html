@@ -57,7 +57,7 @@
                 justify-content: center;
                 color: white;
                 border: 4px solid white;
-            ">60</div>
+            ">30</div>
 
             <!-- Enemy Health Bar -->
             <div style="
@@ -86,7 +86,7 @@
         <!-- Display Text Container -->
         <div id="displayText" style="
             position: absolute;
-            color: white;
+            color: black;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -112,17 +112,24 @@
             <br>
             <ul id="lista-pontuacoes"></ul>
         </div>
+<<<<<<< dev-vini
+=======
         <div id="app">
             <ul>
                 <!-- JavaScript para extrair e exibir o nome do jogador da URL -->
             </ul>
         </div>
+>>>>>>> main
     </section>
 
     <footer id="rodape-jogo">
         <br><br>
         <h3>
+<<<<<<< dev-vini
+            DEVS: JOSÉ VICTOR & VINICIUS CAUÃ ©
+=======
             DEVS: VICTOR & VINICIUS ©
+>>>>>>> main
         </h3>
     </footer>
 
@@ -226,7 +233,7 @@
                 // Itera sobre as pontuações e as adiciona à lista
                 pontuacoesSalvas.forEach(pontuacao => {
                     const li = document.createElement('li');
-                    li.textContent = `Jogador: ${pontuacao.jogador}, Pontuação: ${pontuacao.pontuacao}`;
+                    li.textContent = `Jogador: ${pontuacao.jogador} | Pontuação: ${pontuacao.pontuacao}`;
                     listaPontuacoes.appendChild(li);
                 });
 
@@ -238,8 +245,8 @@
                 const pontosElement = document.getElementById('pontos-atual');
                 pontosElement.textContent = pontuacao; // Atualiza o conteúdo com os pontos do jogador
 
-                // Obtém o jogador atual (você pode substituir isso pelo jogador real)
-                const jogadorAtual = "jogador_teste"; // Substitua pelo jogador real
+                
+                const jogadorAtual = "jogador_teste";
 
                 // Salva a pontuação associada ao jogador no localStorage
                 salvarPontuacaoLocal(jogadorAtual, pontuacao);
