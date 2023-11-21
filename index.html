@@ -107,36 +107,142 @@
 
     <button id="playButton" hidden>Reproduzir</button>
 
-        <audio id="backgroundAudio" loop>
-            <source src="assets/sounds/bgMusic.mp3" type="audio/mp3">
-            Seu navegador não suporta o elemento de áudio.
-        </audio>
+    <audio id="backgroundAudio" loop>
+        <source src="assets/sounds/bgMusic.mp3" type="audio/mp3">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var audio = document.getElementById('backgroundAudio');
-                var playButton = document.getElementById('playButton');
+    <div id="pontuacoes-salvas">
+        <h2>Pontuações Salvas</h2>
+        <ul id="lista-pontuacoes"></ul>
+    </div>
 
-                // Função para reproduzir áudio
-                function playAudio() {
-                    audio.play().then(function () {
-                        console.log('Áudio reproduzido com sucesso após interação do usuário.');
-                    }).catch(function (error) {
-                        console.error('Erro ao reproduzir áudio:', error.message);
-                    });
-                }
+    <div id="app">
+        <ul>
+            <!-- JavaScript para extrair e exibir o nome do jogador da URL -->
+        </ul>
+    </div>
 
-                // Adicionar evento de clique ao botão
-                playButton.addEventListener('click', playAudio);
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Código para reprodução de áudio
+            var audio = document.getElementById('backgroundAudio');
+            var playButton = document.getElementById('playButton');
 
-                // Reproduzir áudio automaticamente ao carregar a página se o usuário interagiu
-                document.addEventListener('click', function () {
-                    playAudio();
-                    // Remover o evento de clique após a primeira interação
-                    document.removeEventListener('click', arguments.callee);
+            // Função para reproduzir áudio
+            function playAudio() {
+                audio.play().then(function () {
+                    console.log('Áudio reproduzido com sucesso após interação do usuário.');
+                }).catch(function (error) {
+                    console.error('Erro ao reproduzir áudio:', error.message);
                 });
+            }
+
+            // Adicionar evento de clique ao botão
+            playButton.addEventListener('click', playAudio);
+
+            // Reproduzir áudio automaticamente ao carregar a página se o usuário interagiu
+            document.addEventListener('click', function () {
+                playAudio();
+                // Remover o evento de clique após a primeira interação
+                document.removeEventListener('click', arguments.callee);
             });
-        </script>
+
+            // Código para lista de jogadores
+            console.log("Script de lista de jogadores carregado.");
+
+            let listaPlayers = document.querySelector("#app ul");
+
+            // Função para obter jogadores do localStorage
+            function obterJogadoresDoLocalStorage() {
+                const jogadoresLocalStorage = localStorage.getItem('jogadores');
+                return jogadoresLocalStorage ? JSON.parse(jogadoresLocalStorage) : [];
+            }
+
+            // Função para renderizar jogadores na lista
+            function renderizaJogadores() {
+                console.log("Renderizando jogadores.");
+
+                // Verifica se o elemento listaPlayers foi encontrado
+                if (listaPlayers) {
+                    listaPlayers.innerHTML = "";
+                    const players = obterJogadoresDoLocalStorage();
+
+                    console.log("Jogadores obtidos do localStorage:", players);
+
+                    players.forEach(function (player) {
+                        let li = document.createElement("li");
+                        li.textContent = "Jogador: " + player;
+                        listaPlayers.appendChild(li);
+                    });
+                } else {
+                    console.error("Elemento listaPlayers não encontrado.");
+                }
+            }
+
+            // Função para salvar a pontuação do jogador no localStorage
+            function salvarPontuacaoLocal(jogador, pontuacao) {
+                // Recupera os dados existentes do localStorage (se houver)
+                const dadosPontuacao = JSON.parse(localStorage.getItem('dadosPontuacao')) || [];
+
+                // Adiciona a nova pontuação aos dados salvos, associando ao jogador
+                dadosPontuacao.push({ jogador: jogador, pontuacao: pontuacao });
+
+                // Salva os dados atualizados no localStorage
+                localStorage.setItem('dadosPontuacao', JSON.stringify(dadosPontuacao));
+
+                console.log(`Pontuação salva para o jogador ${jogador}: ${pontuacao}`);
+            }
+            
+
+            // Função para obter as pontuações salvas do localStorage
+            function obterPontuacoesSalvas() {
+                // Recupera os dados do localStorage
+                const dadosPontuacao = JSON.parse(localStorage.getItem('dadosPontuacao')) || [];
+
+                return dadosPontuacao;
+            }
+
+            // Função para exibir as pontuações salvas
+            function exibirPontuacoesSalvas() {
+                const listaPontuacoes = document.getElementById('lista-pontuacoes');
+
+                // Limpa a lista de pontuações
+                listaPontuacoes.innerHTML = '';
+
+                // Obtém as pontuações salvas
+                const pontuacoesSalvas = obterPontuacoesSalvas();
+
+                // Itera sobre as pontuações e as adiciona à lista
+                pontuacoesSalvas.forEach(pontuacao => {
+                    const li = document.createElement('li');
+                    li.textContent = `Jogador: ${pontuacao.jogador}, Pontuação: ${pontuacao.pontuacao}`;
+                    listaPontuacoes.appendChild(li);
+                });
+
+                console.log('Pontuações salvas exibidas:', pontuacoesSalvas);
+            }
+
+            // Função para atualizar a pontuação na interface do usuário e salvá-la no localStorage
+            function atualizarPontuacao(pontuacao) {
+                const pontosElement = document.getElementById('pontos-atual');
+                pontosElement.textContent = pontuacao; // Atualiza o conteúdo com os pontos do jogador
+
+                // Obtém o jogador atual (você pode substituir isso pelo jogador real)
+                const jogadorAtual = "jogador_teste"; // Substitua pelo jogador real
+
+                // Salva a pontuação associada ao jogador no localStorage
+                salvarPontuacaoLocal(jogadorAtual, pontuacao);
+            }
+
+            // Exemplo de uso para exibir pontuações
+            exibirPontuacoesSalvas();
+
+            // Chama a função para renderizar jogadores ao carregar a página
+            renderizaJogadores();
+        });
+
+    </script>
 </body>
 
 </html>

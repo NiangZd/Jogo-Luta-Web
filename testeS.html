@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>testeS</title>
+</head>
+
+<body>
+
+    <div id="app">
+        <ul>
+            <!-- JavaScript para extrair e exibir o nome do jogador da URL -->
+        </ul>
+    </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Script de lista de jogadores carregado.");
+
+    let listaPlayers = document.querySelector("#app ul");
+
+    // Função para obter jogadores do localStorage
+    function obterJogadoresDoLocalStorage() {
+        const jogadoresLocalStorage = localStorage.getItem('jogadores');
+        return jogadoresLocalStorage ? JSON.parse(jogadoresLocalStorage) : [];
+    }
+
+    // Função para renderizar jogadores na lista
+    function renderizaJogadores() {
+        console.log("Renderizando jogadores.");
+
+        // Verifica se o elemento listaPlayers foi encontrado
+        if (listaPlayers) {
+            listaPlayers.innerHTML = "";
+            const players = obterJogadoresDoLocalStorage();
+            
+            console.log("Jogadores obtidos do localStorage:", players);
+
+            players.forEach(function (player) {
+                let li = document.createElement("li");
+                li.textContent = "Jogador: " + player;
+                listaPlayers.appendChild(li);
+            });
+        } else {
+            console.error("Elemento listaPlayers não encontrado.");
+        }
+    }
+
+    // Chama a função para renderizar jogadores ao carregar a página
+    renderizaJogadores();
+});
+
+
+
+    </script>
+</body>
+
+</html>

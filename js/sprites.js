@@ -47,7 +47,7 @@ class Sprite {
             this.currentSprite = this.sprites.idle;
         }
     }
-    
+
 
     loadSprite() {
         let previousSprite = this.image.src;
@@ -261,7 +261,7 @@ class Fighter extends Sprite {
         }, this.attackCooldown);
     }
 
-    
+
 
     fireAttack() {
         if (this.onFireAttackCooldown) return;
@@ -305,9 +305,12 @@ class Fighter extends Sprite {
         if (!this.onGround) return;
         this.velocity.y = -8.5;
     }
+
+    isDead() {
+        return this.currentHealth <= 0;
+    }
+
 }
-
-
 
 class Enemy extends Fighter {
     constructor({
@@ -758,12 +761,17 @@ function resetEnemies() {
 }
 
 function nextPhase() {
-    currentPhase ++;
+    currentPhase++;
+
+    // Restaura a pontuação do LocalStorage
+    player.pontos = parseInt(localStorage.getItem('pontuacao')) || 0;
     resetEnemies();
 
     // Reinicia o temporizador ao avançar para a próxima fase
     timer;
     startTimer();
+
+    console.log("Pontuação do Jogador:", player.pontos);
 
     // Atualiza a barra de saúde do inimigo no HTML
     document.querySelector('#enemyVida').style.width = '100%';
@@ -784,14 +792,16 @@ function ganhador({ player, enemy, timerID }) {
 }
 
 
-let timer = 30;
-let timerID
+let timer = 10;
+let timerID;
 
 function startTimer() {
-    if (timer > 0) {
+    const timerElement = document.querySelector('#timer');
+
+    if (timer > 0 && timerElement) {
         timerID = setTimeout(startTimer, 1000);
         timer--;
-        document.querySelector('#timer').innerHTML = timer;
+        timerElement.innerHTML = timer;
     }
 
     if (timer === 0) {
@@ -801,14 +811,33 @@ function startTimer() {
 
 startTimer();
 
-function atualizarPontos() {
-
+/*function atualizarPontos() {
     const pontosElement = document.getElementById('pontos-atual');
     pontosElement.textContent = player.pontos; // Atualiza o conteúdo com os pontos do jogador
+    console.log("Sua pontuação foi de: " + player.pontos)
+}*/
+
+function atualizarPontos() {
+    const pontosElement = document.getElementById('pontos-atual');
+    pontosElement.textContent = player.pontos; // Atualiza o conteúdo com os pontos do jogador
+
+    // Salva a pontuação no LocalStorage
+    localStorage.setItem('pontuacao', player.pontos.toString());
 }
 
+/*function atualizarPontuacao(pontos) {
+    // Obtém a pontuação atual do LocalStorage
+    const pontuacaoAtual = parseInt(localStorage.getItem('pontuacao')) || 0;
 
+    // Atualiza a pontuação somando os pontos obtidos
+    const novaPontuacao = pontuacaoAtual + pontos;
 
+    // Salva a nova pontuação no LocalStorage
+    localStorage.setItem('pontuacao', novaPontuacao.toString());
+
+    // Retorna a nova pontuação se necessário
+    return novaPontuacao;
+}*/
 
 
 // APENAS VERIFICAÇÃO DE HITBOX
