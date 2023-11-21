@@ -765,13 +765,10 @@ function nextPhase() {
 
     // Restaura a pontuação do LocalStorage
     player.pontos = parseInt(localStorage.getItem('pontuacao')) || 0;
-    resetEnemies();
-
     // Reinicia o temporizador ao avançar para a próxima fase
     timer;
     startTimer();
-
-    console.log("Pontuação do Jogador:", player.pontos);
+    resetEnemies();
 
     // Atualiza a barra de saúde do inimigo no HTML
     document.querySelector('#enemyVida').style.width = '100%';
@@ -783,39 +780,39 @@ function ganhador({ player, enemy, timerID }) {
     document.querySelector('#displayText').style.display = 'flex';
 
     if (player.currentHealth === enemy.currentHealth) {
+        alert("Incrível! Você e seu adversário empataram na vida!")
         document.querySelector('#displayText').innerHTML = 'Empate';
     } else if (player.currentHealth > enemy.currentHealth) {
+        alert("Você deu mais dano do que sofreu. Parabéns!")
         document.querySelector('#displayText').innerHTML = 'Player 1 ganhou';
     } else if (player.currentHealth < enemy.currentHealth) {
+        alert("Seu adversário deu mais dano. Tente na proxima vez.")
         document.querySelector('#displayText').innerHTML = 'BOT ganhou';
     }
+
+    atualizarPontos();
 }
 
-
-let timer = 10;
+let timer = 30;  // Define o tempo inicial do temporizador
 let timerID;
 
 function startTimer() {
-    const timerElement = document.querySelector('#timer');
+    const timerE = document.getElementById("timer");
 
-    if (timer > 0 && timerElement) {
+    if (timer > 0 && timerE) {
         timerID = setTimeout(startTimer, 1000);
-        timer--;
-        timerElement.innerHTML = timer;
+        timer--;  // Reduz o tempo restante a cada segundo
+        timerE.innerHTML = timer;
     }
 
     if (timer === 0) {
-        ganhador({ player, enemy, timerID })
+        alert("Acabou o tempo!")
+        ganhador({ player, enemy, timerID });
     }
 }
 
+// Inicializa o temporizador quando o jogo começa
 startTimer();
-
-/*function atualizarPontos() {
-    const pontosElement = document.getElementById('pontos-atual');
-    pontosElement.textContent = player.pontos; // Atualiza o conteúdo com os pontos do jogador
-    console.log("Sua pontuação foi de: " + player.pontos)
-}*/
 
 function atualizarPontos() {
     const pontosElement = document.getElementById('pontos-atual');
@@ -824,96 +821,4 @@ function atualizarPontos() {
     // Salva a pontuação no LocalStorage
     localStorage.setItem('pontuacao', player.pontos.toString());
 }
-
-/*function atualizarPontuacao(pontos) {
-    // Obtém a pontuação atual do LocalStorage
-    const pontuacaoAtual = parseInt(localStorage.getItem('pontuacao')) || 0;
-
-    // Atualiza a pontuação somando os pontos obtidos
-    const novaPontuacao = pontuacaoAtual + pontos;
-
-    // Salva a nova pontuação no LocalStorage
-    localStorage.setItem('pontuacao', novaPontuacao.toString());
-
-    // Retorna a nova pontuação se necessário
-    return novaPontuacao;
-}*/
-
-
-// APENAS VERIFICAÇÃO DE HITBOX
-
-
-/*function drawHitbox(ctx, hitbox) {
-    ctx.beginPath();
-    ctx.rect(hitbox.position.x, hitbox.position.y, hitbox.width, hitbox.height);
-    ctx.strokeStyle = 'red';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.closePath();
-}
-
-// Modificação na função draw do Sprite para desenhar hitboxes
-Sprite.prototype.draw = function (ctx) {
-    ctx.imageSmoothingEnabled = false;
-
-    // Determine the x-scale based on the facing direction
-    const xScale = this.facing === 'left' ? -1 : 1;
-
-    this.drawHealthBar(ctx);
-
-    ctx.save();
-    ctx.translate(this.position.x + this.offset.x, this.position.y + this.offset.y);
-    ctx.scale(xScale, 1); // Flip the image horizontally if facing left
-
-    ctx.drawImage(
-        this.image,
-        (this.currentSpriteFrame * this.image.width) / this.totalSpriteFrames,
-        0,
-        this.image.width / this.totalSpriteFrames,
-        this.image.height,
-        0,
-        0,
-        (this.width / this.totalSpriteFrames) * xScale, // Adjust the width with x-scale
-        this.height
-    );
-
-    // Desenhe a hitbox do sprite (adicionei esta linha)
-    drawHitbox(ctx, this);
-
-    ctx.restore();
-};
-
-// Modificação na função update do Fighter para desenhar a hitbox da attackBox
-Fighter.prototype.update = function (ctx) {
-    this.gravity();
-    this.loadSprite();
-
-    // Desenhe a hitbox do jogador (adicionei esta linha)
-    drawHitbox(ctx, this.attackBox);
-
-    this.draw(ctx);
-    this.animate();
-};
-
-// Modificação na função update do Enemy para desenhar a hitbox da attackBox
-Enemy.prototype.update = function (ctx) {
-    if (this.isDead()) {
-        this.setSprite('dead');
-        this.animateDeath();
-
-        // Lógica adicional pode ser adicionada aqui
-
-    } else {
-        this.gravity();
-        this.loadSprite();
-        this.handleAI();
-
-        // Desenhe a hitbox do inimigo (adicionei esta linha)
-        drawHitbox(ctx, this.attackBox);
-
-        this.draw(ctx);
-        this.animate();
-    }
-};*/
-
 
