@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <div style="position: relative; display: inline-block;">
+    <div style="position: relative; display: inline-block; height: 576px;">
 
         <!-- Player and Enemy Health Bars and Timer Container -->
         <div style="
@@ -101,9 +101,30 @@
         <canvas></canvas>
     </div>
 
-    <div id="pontuacao">
-        <p id="pontos-atual">0</p>
-    </div>
+    <section id="sessao-pontos">
+        <div id="pontuacao">
+            <p>PONTUAÇÃO ATUAL: </p>
+            <br>
+            <p id="pontos-atual">0</p>
+        </div>
+        <div id="pontuacoes-salvas">
+            <h2 id="title-list">Pontuações Salvas</h2>
+            <br>
+            <ul id="lista-pontuacoes"></ul>
+        </div>
+        <div id="app">
+            <ul>
+                <!-- JavaScript para extrair e exibir o nome do jogador da URL -->
+            </ul>
+        </div>
+    </section>
+
+    <footer id="rodape-jogo">
+        <br><br>
+        <h3>
+            DEVS: VICTOR & VINICIUS ©
+        </h3>
+    </footer>
 
     <button id="playButton" hidden>Reproduzir</button>
 
@@ -111,17 +132,6 @@
         <source src="assets/sounds/bgMusic.mp3" type="audio/mp3">
         Seu navegador não suporta o elemento de áudio.
     </audio>
-
-    <div id="pontuacoes-salvas">
-        <h2>Pontuações Salvas</h2>
-        <ul id="lista-pontuacoes"></ul>
-    </div>
-
-    <div id="app">
-        <ul>
-            <!-- JavaScript para extrair e exibir o nome do jogador da URL -->
-        </ul>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
