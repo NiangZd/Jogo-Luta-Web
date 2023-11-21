@@ -1,0 +1,81 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+body{
+    background-image: url("arte-de-fundo-pixel-art_805450-71.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    
+}
+#container{
+    width: 450px;
+    background-color: #1c1c1c;
+    border-radius: 70px 0 70px 0;
+    padding: 20px 50px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    transform: translateY(50%);
+    flex-direction: column;
+}
+#container h2{
+    margin: 2rem 0;
+    text-align: center;
+    padding-bottom: 2rem;
+    color: #f6f6f9;
+    border-bottom: 1px solid #f6f6f9;
+    font-size: 2rem;
+}
+#form{
+    margin-bottom: 2rem;
+}
+#form label, input{
+    display: block;
+    width: 100%;
+}
+#form label{
+    margin-bottom: 2px;
+    color: #f6f6f9;
+    font-size: 18px;
+}
+#form input{
+    padding: 15px;
+    outline: none;
+    border: 0;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+}
+#form button{
+    width: 100%;
+    background: #f6f6f9;
+    height: 50px;
+    padding: 15px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #000;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px; /* Adicionar bordas arredondadas */
+}
+
+button a {
+    color: inherit; /* Herdar a cor do texto do botão */
+    text-decoration: none; /* Remover sublinhado do link */
+}
+
+#form button:hover{
+    background-color: black;
+    color: white;
+}
